@@ -1,46 +1,53 @@
 import { useState } from "react";
+import "./ReviewForm.css";
+import FileInput from "./FileInput";
 
 function ReviewForm() {
   const [values, setValues] = useState({
     title: "",
     rating: 0,
     content: "",
+    imgFile: null,
   });
 
-  const handleChange = (e) => {
+  // file input 비제어 컴포넌트화 과정에서 handleChange => handleChange, handleInputChange로 추상화 추가
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
+    handleChange(name, value);
+  };
+
+  // file input(비제어 컴포넌트)에 file name, file value(img) 전달
+  const handleChange = (name, value) => {
     setValues((prevValues) => ({
       ...prevValues,
       [name]: value,
     }));
-    // 여기서 소괄호로 객체 리터럴을 감싼 이유는 '문법적 간소화' 때문.
-    // 원래 형태는 이러함
-    /*
-    setValues((prevValues) => {
-      return {
-        ...prevValues,
-      [ name]: value,
-      }
-    });
-    */
-    // 그러나 위 방식은 다소 복잡해서, 코드를 좀 더 간결하게 쓰고자 자바스크립트 문법상 해당 객체 리터럴을 소괄호로 감싸기만 해도 되도록 허용함.
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(values);
+    // console.log(values);
   };
 
   return (
     <form className="ReviewForm" onSubmit={handleSubmit}>
-      <input name="title" value={values.title} onChange={handleChange} />
+      <FileInput
+        name="imgFile"
+        value={values.imgFile}
+        onChange={handleChange}
+      />
+      <input name="title" value={values.title} onChange={handleInputChange} />
       <input
         type="number"
         name="rating"
         value={values.rating}
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
-      <textarea name="content" value={values.content} onChange={handleChange} />
+      <textarea
+        name="content"
+        value={values.content}
+        onChange={handleInputChange}
+      />
       <button type="submit">확인</button>
     </form>
   );
