@@ -10,6 +10,8 @@ function App() {
   const [order, setOrder] = useState("rating");
   const [offset, setOffset] = useState(0);
   const [hasNext, setHasNext] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingError, setLoadingError] = useState(null);
 
   const handleSelect = (e) => {
     setOrder(e.target.value);
@@ -21,12 +23,22 @@ function App() {
   };
 
   const handleLoad = async (options) => {
-    const { reviews, paging } = await getReviews(options);
+    let result;
+    try {
+      setIsLoading(true);
+      result = await getReviews(options);
+    } catch (e) {
+      setLoadingError(e);
+      return; // 여기서 리턴 안하면 에러나도 try catch 이후 구문들이 모두 실행됨
+    } finally {
+      setIsLoading(false);
+    }
+    const { reviews, paging } = result;
 
     if (options.offset === 0) {
-      setItems(reviews);
+      setItems(reviews); // 초기 데이터 (0~10번째)
     } else {
-      setItems([...items, ...reviews]);
+      setItems((prevItems) => [...prevItems, ...reviews]); // 더보기 (+10개씩)
     }
 
     setOffset(options.offset + reviews.length); // limit:10이므로, 초기 reviews.length 값이 10이라서 초기 offset(시작 위치)값으로부터 +10씩 offset 위치 이동.
@@ -48,7 +60,12 @@ function App() {
         <option value="rating">별점 높은순</option>
       </select>
       <ReviewList items={items} onDelete={handleDelete} />
-      {hasNext && <button onClick={handleLoadMore}>더 보기</button>}
+      {!loadingError && hasNext && (
+        <button disabled={isLoading} onClick={handleLoadMore}>
+          더 보기
+        </button>
+      )}
+      {loadingError?.message && <span>{loadingError.message}</span>}
     </>
   );
 }
