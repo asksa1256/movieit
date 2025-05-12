@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import "./App.css";
 import ReviewList from "./components/ReviewList";
 import { getReviews } from "./api";
+import ReviewForm from "./components/ReviewForm";
 
 const LIMIT = 10;
 
@@ -60,6 +61,7 @@ function App() {
         <option value="createdAt">최신순</option>
         <option value="rating">별점 높은순</option>
       </select>
+      <ReviewForm />
       <ReviewList items={items} onDelete={handleDelete} />
       {!loadingError && hasNext && (
         <button disabled={isLoading} onClick={handleLoadMore}>
