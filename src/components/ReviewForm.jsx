@@ -11,7 +11,7 @@ const INITIAL_VALUES = {
   imgFile: null,
 };
 
-function ReviewForm() {
+function ReviewForm({ onSubmitSuccess }) {
   const [values, setValues] = useState(INITIAL_VALUES);
   const [isSubmitting, setIsSubmitting] = useState(false); // 동일한 전송 여러번 하지 않도록 로딩 추가
   const [submitError, setSubmitError] = useState(null); // 전송 에러 제어
@@ -39,10 +39,14 @@ function ReviewForm() {
       formData.append(key, value);
     });
 
+    let result;
+
     try {
       setSubmitError(null);
       setIsSubmitting(true);
-      await createReview(formData);
+      result = await createReview(formData);
+      const { review } = result;
+      onSubmitSuccess(review);
       setValues(INITIAL_VALUES);
     } catch (e) {
       setSubmitError(e);

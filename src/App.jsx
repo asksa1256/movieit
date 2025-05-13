@@ -51,6 +51,10 @@ function App() {
     handleLoad({ order, offset, limit: LIMIT });
   };
 
+  const handleSubmitSuccess = (review) => {
+    setItems((prevItems) => [review, ...prevItems]); // review가 '비동기'로 불러와지는 데이터이기 때문에, 함수형 업데이트 방식 사용. (콜백으로 prevState 받아와서 안정적으로 누적하는 방식)
+  };
+
   useEffect(() => {
     handleLoad({ order, offset: 0, limit: LIMIT });
   }, [order]);
@@ -61,7 +65,7 @@ function App() {
         <option value="createdAt">최신순</option>
         <option value="rating">별점 높은순</option>
       </select>
-      <ReviewForm />
+      <ReviewForm onSubmitSuccess={handleSubmitSuccess} />
       <ReviewList items={items} onDelete={handleDelete} />
       {!loadingError && hasNext && (
         <button disabled={isLoading} onClick={handleLoadMore}>
