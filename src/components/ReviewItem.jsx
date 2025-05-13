@@ -1,4 +1,5 @@
 import formatDate from "../utils/formatDate";
+import Rating from "./Rating";
 
 const ReviewItem = ({ item, onDelete }) => {
   const { title, imgUrl, rating, createdAt, content, id } = item;
@@ -12,7 +13,7 @@ const ReviewItem = ({ item, onDelete }) => {
       <img className="ReviewListItem-img" src={imgUrl} alt={title} />
       <div className="desc">
         <h2 className="title">{title}</h2>
-        <div className="rating">{rating}</div>
+        <Rating value={rating} />
         <span className="date">{formatDate(createdAt)}</span>
         <p className="content">{content}</p>
         <button onClick={handleDeleteClick}>삭제</button>
