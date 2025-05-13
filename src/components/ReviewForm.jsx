@@ -10,12 +10,14 @@ function ReviewForm() {
     imgFile: null,
   });
 
+  // handleInputChange: 제어 컴포넌트용 handleChange
   // file input 비제어 컴포넌트화 과정에서 handleChange => handleChange, handleInputChange로 추상화 추가
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     handleChange(name, value);
   };
 
+  // handleChange: 비제어 컴포넌트용 handleChange
   // file input(비제어 컴포넌트)에 file name, file value(img) 전달
   const handleChange = (name, value) => {
     setValues((prevValues) => ({
