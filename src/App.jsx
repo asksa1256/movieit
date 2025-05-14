@@ -4,8 +4,8 @@ import ReviewList from "./components/ReviewList";
 import { createReview, updateReview, deleteReview, getReviews } from "./api";
 import ReviewForm from "./components/ReviewForm";
 import useAsync from "./hooks/useAsync";
-import LocaleContext from "./contexts/LocaleContext";
-import SelectLocale from "./components/SelectLocale";
+import LocaleSelect from "./components/LocaleSelect";
+import { LocaleProvider } from "./contexts/LocaleContext.jsx";
 
 const LIMIT = 10;
 
@@ -15,7 +15,6 @@ function App() {
   const [offset, setOffset] = useState(0);
   const [hasNext, setHasNext] = useState(true);
   const [isLoading, loadingError, getReviewsAsync] = useAsync(getReviews);
-  const [locale, setLocale] = useState("ko");
 
   const handleSelect = (e) => {
     setOrder(e.target.value);
@@ -73,9 +72,9 @@ function App() {
   }, [order, handleLoad]);
 
   return (
-    <LocaleContext.Provider value={locale}>
-      <div className="SelectLocale">
-        <SelectLocale value={locale} onChange={setLocale} />
+    <LocaleProvider defaultValue={"ko"}>
+      <div className="LocaleSelect">
+        <LocaleSelect />
       </div>
       <div className="SelectOrder">
         <select name="selectOrder" id="selectOrder" onChange={handleSelect}>
@@ -99,7 +98,7 @@ function App() {
         </button>
       )}
       {loadingError?.message && <span>{loadingError.message}</span>}
-    </LocaleContext.Provider>
+    </LocaleProvider>
   );
 }
 
