@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 import ReviewList from "./components/ReviewList";
-import { getReviews } from "./api";
+import { createReview, updateReview, getReviews } from "./api";
 import ReviewForm from "./components/ReviewForm";
 
 const LIMIT = 10;
@@ -51,8 +51,20 @@ function App() {
     handleLoad({ order, offset, limit: LIMIT });
   };
 
+  // 리뷰 등록/수정 성공 시 api 리스폰스 반영
   const handleSubmitSuccess = (review) => {
     setItems((prevItems) => [review, ...prevItems]); // review가 '비동기'로 불러와지는 데이터이기 때문에, 함수형 업데이트 방식 사용. (콜백으로 prevState 받아와서 안정적으로 누적하는 방식)
+  };
+
+  const handleUpdateSuccess = (updateItem) => {
+    setItems((prevItems) => {
+      const splitIdx = prevItems.findIndex((item) => item.id === updateItem.id);
+      return [
+        ...prevItems.slice(0, splitIdx),
+        updateItem,
+        ...prevItems.slice(splitIdx + 1),
+      ];
+    });
   };
 
   useEffect(() => {
@@ -65,8 +77,16 @@ function App() {
         <option value="createdAt">최신순</option>
         <option value="rating">별점 높은순</option>
       </select>
-      <ReviewForm onSubmitSuccess={handleSubmitSuccess} />
-      <ReviewList items={items} onDelete={handleDelete} />
+      <ReviewForm
+        onSubmit={createReview}
+        onSubmitSuccess={handleSubmitSuccess}
+      />
+      <ReviewList
+        items={items}
+        onDelete={handleDelete}
+        onUpdate={updateReview}
+        onUpdateSuccess={handleUpdateSuccess}
+      />
       {!loadingError && hasNext && (
         <button disabled={isLoading} onClick={handleLoadMore}>
           더 보기
