@@ -3,7 +3,9 @@ import "./App.css";
 import ReviewList from "./components/ReviewList";
 import { createReview, updateReview, deleteReview, getReviews } from "./api";
 import ReviewForm from "./components/ReviewForm";
-import useAsync from "./components/hooks/useAsync";
+import useAsync from "./hooks/useAsync";
+import LocaleContext from "./contexts/LocaleContext";
+import SelectLocale from "./components/SelectLocale";
 
 const LIMIT = 10;
 
@@ -13,6 +15,7 @@ function App() {
   const [offset, setOffset] = useState(0);
   const [hasNext, setHasNext] = useState(true);
   const [isLoading, loadingError, getReviewsAsync] = useAsync(getReviews);
+  const [locale, setLocale] = useState("ko");
 
   const handleSelect = (e) => {
     setOrder(e.target.value);
@@ -70,11 +73,16 @@ function App() {
   }, [order, handleLoad]);
 
   return (
-    <>
-      <select name="selectOrder" id="selectOrder" onChange={handleSelect}>
-        <option value="createdAt">최신순</option>
-        <option value="rating">별점 높은순</option>
-      </select>
+    <LocaleContext.Provider value={locale}>
+      <div className="SelectLocale">
+        <SelectLocale value={locale} onChange={setLocale} />
+      </div>
+      <div className="SelectOrder">
+        <select name="selectOrder" id="selectOrder" onChange={handleSelect}>
+          <option value="createdAt">최신순</option>
+          <option value="rating">별점 높은순</option>
+        </select>
+      </div>
       <ReviewForm
         onSubmit={createReview}
         onSubmitSuccess={handleSubmitSuccess}
@@ -91,7 +99,7 @@ function App() {
         </button>
       )}
       {loadingError?.message && <span>{loadingError.message}</span>}
-    </>
+    </LocaleContext.Provider>
   );
 }
 
