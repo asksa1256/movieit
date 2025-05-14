@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 import ReviewList from "./components/ReviewList";
-import { createReview, updateReview, getReviews } from "./api";
+import { createReview, updateReview, deleteReview, getReviews } from "./api";
 import ReviewForm from "./components/ReviewForm";
 
 const LIMIT = 10;
@@ -18,7 +18,10 @@ function App() {
     setOrder(e.target.value);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
+    const result = await deleteReview(id);
+    if (!result) return; // 삭제 성공 시에만 아래 코드 실행
+
     const nextItems = items.filter((item) => item.id !== id);
     setItems(nextItems);
   };

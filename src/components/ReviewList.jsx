@@ -18,7 +18,7 @@ const ReviewList = ({ items, onDelete, onUpdate, onUpdateSuccess }) => {
           const handleSubmit = (formData) => onUpdate(id, formData);
           const handleSubmitSuccess = (review) => {
             onUpdateSuccess(review);
-            setEditingId(null); // 제출 후 입력 폼 닫기
+            setEditingId(null); // 제출 후 입력 폼 닫기 (item.id !== editingId)
           };
 
           return (
