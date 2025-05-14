@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import "./App.css";
 import ReviewList from "./components/ReviewList";
 import { createReview, updateReview, deleteReview, getReviews } from "./api";
 import ReviewForm from "./components/ReviewForm";
+import useAsync from "./components/hooks/useAsync";
 
 const LIMIT = 10;
 
@@ -11,8 +12,7 @@ function App() {
   const [order, setOrder] = useState("rating");
   const [offset, setOffset] = useState(0);
   const [hasNext, setHasNext] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
-  const [loadingError, setLoadingError] = useState(null);
+  const [isLoading, loadingError, getReviewsAsync] = useAsync(getReviews);
 
   const handleSelect = (e) => {
     setOrder(e.target.value);
@@ -26,29 +26,24 @@ function App() {
     setItems(nextItems);
   };
 
-  const handleLoad = async (options) => {
-    let result;
-    try {
-      setLoadingError(null);
-      setIsLoading(true);
-      result = await getReviews(options);
-    } catch (e) {
-      setLoadingError(e);
-      return; // 여기서 리턴 안하면 에러나도 try catch 이후 구문들이 모두 실행됨
-    } finally {
-      setIsLoading(false);
-    }
-    const { reviews, paging } = result;
+  const handleLoad = useCallback(
+    async (options) => {
+      const result = await getReviewsAsync(options);
+      if (!result) return;
 
-    if (options.offset === 0) {
-      setItems(reviews); // 초기 데이터 (0~10번째)
-    } else {
-      setItems((prevItems) => [...prevItems, ...reviews]); // 더보기 (+10개씩)
-    }
+      const { reviews, paging } = result;
 
-    setOffset(options.offset + reviews.length); // limit:10이므로, 초기 reviews.length 값이 10이라서 초기 offset(시작 위치)값으로부터 +10씩 offset 위치 이동.
-    setHasNext(paging.hasNext);
-  };
+      if (options.offset === 0) {
+        setItems(reviews); // 초기 데이터 (0~10번째)
+      } else {
+        setItems((prevItems) => [...prevItems, ...reviews]); // 더보기 (+10개씩)
+      }
+
+      setOffset(options.offset + reviews.length); // limit:10이므로, 초기 reviews.length 값이 10이라서 초기 offset(시작 위치)값으로부터 +10씩 offset 위치 이동.
+      setHasNext(paging.hasNext);
+    },
+    [getReviewsAsync]
+  );
 
   const handleLoadMore = () => {
     handleLoad({ order, offset, limit: LIMIT });
@@ -72,7 +67,7 @@ function App() {
 
   useEffect(() => {
     handleLoad({ order, offset: 0, limit: LIMIT });
-  }, [order]);
+  }, [order, handleLoad]);
 
   return (
     <>

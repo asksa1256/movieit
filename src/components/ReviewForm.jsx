@@ -2,6 +2,7 @@ import { useState } from "react";
 import "./ReviewForm.css";
 import FileInput from "./FileInput";
 import RatingInput from "./RatingInput";
+import useAsync from "./hooks/useAsync";
 
 const INITIAL_VALUES = {
   title: "",
@@ -18,8 +19,7 @@ function ReviewForm({
   initialPreview,
 }) {
   const [values, setValues] = useState(initialValues);
-  const [isSubmitting, setIsSubmitting] = useState(false); // 동일한 전송 여러번 하지 않도록 로딩 추가
-  const [submitError, setSubmitError] = useState(null); // 전송 에러 제어
+  const [isSubmitting, submitError, onSubmitAsync] = useAsync(onSubmit);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -40,19 +40,11 @@ function ReviewForm({
       formData.append(key, value);
     });
 
-    let result;
-    try {
-      setSubmitError(null);
-      setIsSubmitting(true);
-      result = await onSubmit(formData);
-    } catch (e) {
-      setSubmitError(e);
-      return;
-    } finally {
-      setIsSubmitting(false);
-    }
+    const result = await onSubmitAsync(formData);
+    if (!result) return;
 
     const { review } = result;
+
     onSubmitSuccess(review);
     setValues(INITIAL_VALUES);
   };
