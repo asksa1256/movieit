@@ -1,10 +1,10 @@
 import formatDate from "../utils/formatDate";
 import Rating from "./Rating";
-import { useLocale } from "../contexts/LocaleContext.jsx";
+import useTranslate from "../hooks/useTranslate.js";
 
 const ReviewItem = ({ item, onDelete, onEdit }) => {
   const { title, imgUrl, rating, createdAt, content, id } = item;
-  const locale = useLocale();
+  const translate = useTranslate();
 
   const handleDeleteClick = () => {
     onDelete(id);
@@ -22,9 +22,10 @@ const ReviewItem = ({ item, onDelete, onEdit }) => {
         <Rating value={rating} />
         <span className="date">{formatDate(createdAt)}</span>
         <p className="content">{content}</p>
-        <p>사용 언어: {locale}</p>
-        <button onClick={handleEditClick}>수정</button>
-        <button onClick={handleDeleteClick}>삭제</button>
+        <button onClick={handleEditClick}>{translate("edit button")}</button>
+        <button onClick={handleDeleteClick}>
+          {translate("delete button")}
+        </button>
       </div>
     </li>
   );
