@@ -11,20 +11,21 @@ const INITIAL_VALUES = {
   imgFile: null,
 };
 
-function ReviewForm({ onSubmitSuccess }) {
-  const [values, setValues] = useState(INITIAL_VALUES);
+function ReviewForm({
+  initialValues = INITIAL_VALUES,
+  onSubmitSuccess,
+  onCancel,
+  initialPreview,
+}) {
+  const [values, setValues] = useState(initialValues);
   const [isSubmitting, setIsSubmitting] = useState(false); // 동일한 전송 여러번 하지 않도록 로딩 추가
   const [submitError, setSubmitError] = useState(null); // 전송 에러 제어
 
-  // handleInputChange: 제어 컴포넌트용 handleChange
-  // file input 비제어 컴포넌트화 과정에서 handleChange => handleChange, handleInputChange로 추상화 추가
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     handleChange(name, value);
   };
 
-  // handleChange: 비제어 컴포넌트용 handleChange
-  // file input(비제어 컴포넌트)에 file name, file value(img) 전달
   const handleChange = (name, value) => {
     setValues((prevValues) => ({
       ...prevValues,
@@ -40,7 +41,6 @@ function ReviewForm({ onSubmitSuccess }) {
     });
 
     let result;
-
     try {
       setSubmitError(null);
       setIsSubmitting(true);
@@ -62,6 +62,7 @@ function ReviewForm({ onSubmitSuccess }) {
         name="imgFile"
         value={values.imgFile}
         onChange={handleChange}
+        initialPreview={initialPreview}
       />
       <input name="title" value={values.title} onChange={handleInputChange} />
       <RatingInput
@@ -77,6 +78,11 @@ function ReviewForm({ onSubmitSuccess }) {
       <button type="submit" disabled={isSubmitting}>
         확인
       </button>
+      {onCancel && (
+        <button type="button" onClick={onCancel}>
+          취소
+        </button>
+      )}
       {submitError?.message && <p>{submitError.message}</p>}
     </form>
   );
