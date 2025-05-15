@@ -5,7 +5,7 @@ import { createReview, updateReview, deleteReview, getReviews } from "./api";
 import ReviewForm from "./components/ReviewForm";
 import useAsync from "./hooks/useAsync";
 import LocaleSelect from "./components/LocaleSelect";
-import { LocaleProvider } from "./contexts/LocaleContext.jsx";
+import useTranslate from "./hooks/useTranslate";
 
 const LIMIT = 10;
 
@@ -15,6 +15,7 @@ function App() {
   const [offset, setOffset] = useState(0);
   const [hasNext, setHasNext] = useState(true);
   const [isLoading, loadingError, getReviewsAsync] = useAsync(getReviews);
+  const t = useTranslate();
 
   const handleSelect = (e) => {
     setOrder(e.target.value);
@@ -72,14 +73,14 @@ function App() {
   }, [order, handleLoad]);
 
   return (
-    <LocaleProvider defaultValue={"ko"}>
+    <>
       <div className="LocaleSelect">
         <LocaleSelect />
       </div>
       <div className="SelectOrder">
         <select name="selectOrder" id="selectOrder" onChange={handleSelect}>
-          <option value="createdAt">최신순</option>
-          <option value="rating">별점 높은순</option>
+          <option value="createdAt">{t("latest")}</option>
+          <option value="rating">{t("highest rated")}</option>
         </select>
       </div>
       <ReviewForm
@@ -94,11 +95,11 @@ function App() {
       />
       {!loadingError && hasNext && (
         <button disabled={isLoading} onClick={handleLoadMore}>
-          더 보기
+          {t("view more")}
         </button>
       )}
       {loadingError?.message && <span>{loadingError.message}</span>}
-    </LocaleProvider>
+    </>
   );
 }
 

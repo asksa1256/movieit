@@ -6,12 +6,20 @@ const dict = {
     "cancel button": "취소",
     "edit button": "수정",
     "delete button": "삭제",
+    latest: "최신순",
+    "highest rated": "별점 높은 순",
+    search: "검색",
+    "view more": "더보기",
   },
   en: {
     "confirm button": "OK",
     "cancel button": "Cancel",
     "edit button": "Edit",
     "delete button": "Delete",
+    latest: "Latest",
+    "highest rated": "Highest Rated",
+    search: "Search",
+    "view more": "View More",
   },
 };
 
